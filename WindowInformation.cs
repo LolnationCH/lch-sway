@@ -22,6 +22,8 @@ public class WindowInformation
 
     public required Point Size { get; set; }
 
+    public required Rectangle Rect { get; set; }
+
     public override string ToString()
     {
         return $"Title: {Title}, ClassName: {ClassName}, Location: {Location}, Size: {Size}";

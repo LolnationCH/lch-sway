@@ -62,7 +62,8 @@ public class WindowFetcher
                 Title = title,
                 ClassName = className,
                 Location = new Point() { X = rect.Left, Y = rect.Top },
-                Size = new Point() { X = rect.Right - rect.Left, Y = rect.Bottom - rect.Top }
+                Size = new Point() { X = rect.Right - rect.Left, Y = rect.Bottom - rect.Top },
+                Rect = windowBounds
             });
 
             return true;
