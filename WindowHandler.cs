@@ -26,11 +26,15 @@ public static class WindowHandler
 
     public static void MoveWindowToZone(WindowInformation window, SnapZone snapZone)
     {
+
+        TracesHandler.PrintObj("Moving", new() { { "title", window.Title }, { "zone", snapZone } });
         var handle = window.Handle;
 
+        UnMaximizeWindow(handle);
         RemoveMaximizeBoxStyle(handle);
         SetWindowPosition(snapZone, handle);
         SetForegroundWindow(handle);
+        AddingMaximizeBoxStyle(handle);
     }
 
     public static void ResetSnapZoneIndex()
@@ -42,6 +46,18 @@ public static class WindowHandler
     {
         var style = (SetWindowLongFlags)GetWindowLong(handle, WindowLongIndexFlags.GWL_STYLE);
         style &= ~SetWindowLongFlags.WS_MAXIMIZEBOX;
+        SetWindowLong(handle, WindowLongIndexFlags.GWL_STYLE, style);
+    }
+
+    private static void UnMaximizeWindow(nint handle)
+    {
+        ShowWindow(handle, WindowShowStyle.SW_RESTORE);
+    }
+
+    private static void AddingMaximizeBoxStyle(nint handle)
+    {
+        var style = (SetWindowLongFlags)GetWindowLong(handle, WindowLongIndexFlags.GWL_STYLE);
+        style |= SetWindowLongFlags.WS_MAXIMIZEBOX;
         SetWindowLong(handle, WindowLongIndexFlags.GWL_STYLE, style);
     }
 

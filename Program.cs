@@ -1,7 +1,4 @@
-﻿var windows = WindowFetcher.GetWindowsOnCurrentScreen();
+﻿TracesHandler.Run();
 
-var w = windows.Where(x => x.Title.ToLower().Contains("firefox")).ToList();
-
-WindowHandler.currentLayout = SnapZoneLayouts.splitHorizontal;
-
-w.ToList().ForEach(x => WindowHandler.MoveWindowToNextZone(x));
+var windows = WindowFetcher.GetWindowsOnCurrentScreen();
+WindowLayoutSetter.SetProgramsToLayout(windows);
