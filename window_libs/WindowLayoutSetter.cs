@@ -16,8 +16,8 @@ public static class WindowLayoutSetter
 
     private static void SetWindowsToLayout(ProgramToLayout programToLayout, List<WindowInformation> windows)
     {
-        WindowHandler.currentLayout = SnapZoneLayouts.GetLayout(programToLayout.Layout);
-        windows.ForEach(y => WindowHandler.MoveWindowToNextZone(y));
+        var currentLayout = SnapZoneLayouts.GetLayout(programToLayout.Layout);
+        windows.ForEach(y => WindowHandler.MoveWindowToNextZone(y, currentLayout));
     }
 
     private static List<WindowInformation> GetWindowsFitConfig(List<WindowInformation> windowInformation, ProgramToLayout programToLayout)
@@ -25,11 +25,8 @@ public static class WindowLayoutSetter
         var windows = new HashSet<WindowInformation>();
         programToLayout.ProgramTitles.ForEach(titleThatApplyToLayout =>
         {
-            var window = windowInformation.FirstOrDefault(windowInfo => TitleContains(windowInfo, titleThatApplyToLayout));
-            if (window != null)
-            {
-                windows.Add(window);
-            }
+            windowInformation.Where(windowInfo => TitleContains(windowInfo, titleThatApplyToLayout))
+                             .ToList().ForEach(x => windows.Add(x));
         });
         return windows.ToList();
     }

@@ -1,4 +1,11 @@
-﻿TracesHandler.Run();
+﻿// LCH-Sway : Inspired by Sway, made for windows.
+// Author: LolnationCH
 
-var windows = WindowFetcher.GetWindowsOnCurrentScreen();
-WindowLayoutSetter.SetProgramsToLayout(windows);
+TracesHandler.Run();
+WindowHandler.HandleWindows();
+
+// Keep the program running
+while (true)
+{
+    Thread.Sleep(1000);
+}

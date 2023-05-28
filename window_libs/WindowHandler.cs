@@ -2,23 +2,42 @@ using static PInvoke.User32;
 
 public static class WindowHandler
 {
+    // TODO : Right now the lastSnapZone is the global one, we need to make it per layout.
+    #region Members
+    public static List<WindowInformation> windowsHandled = new();
     public static SnapZoneLayout currentLayout = SnapZoneLayouts.full;
     public static SnapZone? lastSnapZone = null;
 
-    public static void MoveWindowToNextZone(WindowInformation window)
+    private static WindowEvent windowEvent = new();
+    #endregion
+
+    #region Api
+    public static void HandleWindows()
     {
+        var windows = WindowFetcher.GetWindowsOnCurrentScreen();
+        WindowLayoutSetter.SetProgramsToLayout(windows);
+    }
+
+    public static void MoveWindowToNextZone(WindowInformation window, SnapZoneLayout layout)
+    {
+        if (IsWindowHandled(window)) { return; }
+        currentLayout = layout;
         lastSnapZone = GetNextSnapZone();
         MoveWindowToZone(window, lastSnapZone);
     }
 
-    public static void MoveWindowToPreviousZone(WindowInformation window)
+    public static void MoveWindowToPreviousZone(WindowInformation window, SnapZoneLayout layout)
     {
+        if (IsWindowHandled(window)) { return; }
+        currentLayout = layout;
         lastSnapZone = GetPreviousSnapZone();
         MoveWindowToZone(window, lastSnapZone);
     }
 
-    public static void MoveWindowToCurrentZone(WindowInformation window)
+    public static void MoveWindowToCurrentZone(WindowInformation window, SnapZoneLayout layout)
     {
+        if (IsWindowHandled(window)) { return; }
+        currentLayout = layout;
         if (lastSnapZone == null)
             lastSnapZone = GetDefaultSnapZone();
         MoveWindowToZone(window, lastSnapZone);
@@ -26,7 +45,7 @@ public static class WindowHandler
 
     public static void MoveWindowToZone(WindowInformation window, SnapZone snapZone)
     {
-
+        windowsHandled.Add(window);
         TracesHandler.PrintObj("Moving", new() { { "title", window.Title }, { "zone", snapZone } });
         var handle = window.Handle;
 
@@ -41,7 +60,9 @@ public static class WindowHandler
     {
         lastSnapZone = null;
     }
+    #endregion
 
+    #region Private
     private static void RemoveMaximizeBoxStyle(nint handle)
     {
         var style = (SetWindowLongFlags)GetWindowLong(handle, WindowLongIndexFlags.GWL_STYLE);
@@ -92,8 +113,14 @@ public static class WindowHandler
         return currentLayout[index - 1];
     }
 
+    private static bool IsWindowHandled(WindowInformation window)
+    {
+        return windowsHandled.Any(x => x.Handle == window.Handle);
+    }
+
     private static SnapZone GetDefaultSnapZone()
     {
-        return currentLayout[0];
+        return currentLayout.First();
     }
+    #endregion
 }
