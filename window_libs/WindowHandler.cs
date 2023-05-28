@@ -4,7 +4,7 @@ public static class WindowHandler
 {
     #region Members
     public static List<WindowInformation> windowsHandled = new();
-    public static SnapZoneLayout currentLayout = SnapLayoutsFactory.full;
+    public static SnapZoneLayout currentLayout = SnapLayoutsFactory.GetLayout();
 
     public static Dictionary<SnapZoneLayout, int> LayoutIndexes = new();
 
@@ -83,7 +83,7 @@ public static class WindowHandler
     private static void SetWindowPosition(SnapZone snapZone, nint handle)
     {
         SetWindowPos(handle, SpecialWindowHandles.HWND_TOP,
-                             snapZone.Bounds.Left, snapZone.Bounds.Top, snapZone.Bounds.Width, snapZone.Bounds.Height,
+                             snapZone.Rectangle.Left, snapZone.Rectangle.Top, snapZone.Rectangle.Width, snapZone.Rectangle.Height,
                              SetWindowPosFlags.SWP_SHOWWINDOW);
     }
 

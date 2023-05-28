@@ -5,6 +5,8 @@ public class Configuration
 {
     public List<ProgramToLayout> programsToLayout { get; set; } = ConfigurationDefaultData.programsToLayout;
 
+    public Dictionary<string, List<SnapZone>> customSnapLayouts { get; set; } = ConfigurationDefaultData.customSnapLayouts;
+
     #region generic setter
     public void prepend(string key, string value)
     {
