@@ -1,18 +1,4 @@
-public class SnapZone
-{
-    public required Rectangle Bounds { get; set; }
-    public required string Name { get; set; }
-
-    public override string ToString()
-    {
-        return $"Name => \"{Name}\" ({Bounds.ToString()})";
-    }
-}
-
-public class SnapZoneLayout : List<SnapZone> { }
-
-
-public static class SnapZoneLayouts
+public static class SnapLayoutsFactory
 {
     public static SnapZoneLayout full = new(){
         new SnapZone() { Bounds = new Rectangle(0, 0, 1920, 1080), Name = "Full" },

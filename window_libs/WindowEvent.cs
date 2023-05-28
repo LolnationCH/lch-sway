@@ -1,7 +1,6 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Windows.Automation;
-using System.Windows.Threading;
 
 public class WindowEvent
 {
@@ -36,9 +35,9 @@ public class WindowEvent
 
                 WindowHandler.HandleWindows();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                // ignored
+                Debug.Print($"Error: {ex.Message}");
             }
         }
     }

@@ -2,11 +2,11 @@ using static PInvoke.User32;
 
 public static class WindowHandler
 {
-    // TODO : Right now the lastSnapZone is the global one, we need to make it per layout.
     #region Members
     public static List<WindowInformation> windowsHandled = new();
-    public static SnapZoneLayout currentLayout = SnapZoneLayouts.full;
-    public static SnapZone? lastSnapZone = null;
+    public static SnapZoneLayout currentLayout = SnapLayoutsFactory.full;
+
+    public static Dictionary<SnapZoneLayout, int> LayoutIndexes = new();
 
     private static WindowEvent windowEvent = new();
     #endregion
@@ -20,27 +20,17 @@ public static class WindowHandler
 
     public static void MoveWindowToNextZone(WindowInformation window, SnapZoneLayout layout)
     {
-        if (IsWindowHandled(window)) { return; }
-        currentLayout = layout;
-        lastSnapZone = GetNextSnapZone();
-        MoveWindowToZone(window, lastSnapZone);
+        MoveWindowToZone(window, layout, GetNextSnapZone);
     }
 
     public static void MoveWindowToPreviousZone(WindowInformation window, SnapZoneLayout layout)
     {
-        if (IsWindowHandled(window)) { return; }
-        currentLayout = layout;
-        lastSnapZone = GetPreviousSnapZone();
-        MoveWindowToZone(window, lastSnapZone);
+        MoveWindowToZone(window, layout, GetPreviousSnapZone);
     }
 
     public static void MoveWindowToCurrentZone(WindowInformation window, SnapZoneLayout layout)
     {
-        if (IsWindowHandled(window)) { return; }
-        currentLayout = layout;
-        if (lastSnapZone == null)
-            lastSnapZone = GetDefaultSnapZone();
-        MoveWindowToZone(window, lastSnapZone);
+        MoveWindowToZone(window, layout, GetCurrentSnapZone);
     }
 
     public static void MoveWindowToZone(WindowInformation window, SnapZone snapZone)
@@ -58,11 +48,19 @@ public static class WindowHandler
 
     public static void ResetSnapZoneIndex()
     {
-        lastSnapZone = null;
+        LayoutIndexes = new();
     }
     #endregion
 
     #region Private
+    private static void MoveWindowToZone(WindowInformation window, SnapZoneLayout layout, Func<SnapZone> getZone)
+    {
+        if (IsWindowHandled(window)) { return; }
+        currentLayout = layout;
+        var snapZone = getZone();
+        MoveWindowToZone(window, snapZone);
+    }
+
     private static void RemoveMaximizeBoxStyle(nint handle)
     {
         var style = (SetWindowLongFlags)GetWindowLong(handle, WindowLongIndexFlags.GWL_STYLE);
@@ -91,36 +89,48 @@ public static class WindowHandler
 
     private static SnapZone GetNextSnapZone()
     {
-        if (lastSnapZone == null)
-            return currentLayout[0];
+        if (LayoutIndexes.ContainsKey(currentLayout))
+            LayoutIndexes[currentLayout] = IncrementIndexCurrentLayout(LayoutIndexes[currentLayout]);
+        else
+            LayoutIndexes.Add(currentLayout, 0);
 
-        var index = currentLayout.IndexOf(lastSnapZone);
-        if (index == currentLayout.Count - 1)
-            return currentLayout[0];
-
-        return currentLayout[index + 1];
+        return GetCurrentSnapZone();
     }
 
     private static SnapZone GetPreviousSnapZone()
     {
-        if (lastSnapZone == null)
-            return currentLayout[0];
+        if (LayoutIndexes.ContainsKey(currentLayout))
+            LayoutIndexes[currentLayout] = DecrementIndexCurrentLayout(LayoutIndexes[currentLayout]);
+        else
+            LayoutIndexes.Add(currentLayout, currentLayout.Count - 1);
 
-        var index = currentLayout.IndexOf(lastSnapZone);
+        return GetCurrentSnapZone();
+    }
+
+    private static SnapZone GetCurrentSnapZone()
+    {
+        return currentLayout[LayoutIndexes[currentLayout]];
+    }
+
+    private static int IncrementIndexCurrentLayout(int index)
+    {
+        if (index == currentLayout.Count - 1)
+            return 0;
+        else
+            return index + 1;
+    }
+
+    private static int DecrementIndexCurrentLayout(int index)
+    {
         if (index == 0)
-            return currentLayout[currentLayout.Count - 1];
-
-        return currentLayout[index - 1];
+            return currentLayout.Count - 1;
+        else
+            return index - 1;
     }
 
     private static bool IsWindowHandled(WindowInformation window)
     {
         return windowsHandled.Any(x => x.Handle == window.Handle);
-    }
-
-    private static SnapZone GetDefaultSnapZone()
-    {
-        return currentLayout.First();
     }
     #endregion
 }

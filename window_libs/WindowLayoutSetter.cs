@@ -16,7 +16,7 @@ public static class WindowLayoutSetter
 
     private static void SetWindowsToLayout(ProgramToLayout programToLayout, List<WindowInformation> windows)
     {
-        var currentLayout = SnapZoneLayouts.GetLayout(programToLayout.Layout);
+        var currentLayout = SnapLayoutsFactory.GetLayout(programToLayout.Layout);
         windows.ForEach(y => WindowHandler.MoveWindowToNextZone(y, currentLayout));
     }
 
