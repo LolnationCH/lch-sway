@@ -71,6 +71,36 @@ public class WindowFetcher
         return windows;
     }
 
+    public static WindowInformation? GetWindowInformationByHandle(IntPtr hWnd, bool applyRules = true)
+    {
+        string title = GetWindowTitle(hWnd);
+        if (string.IsNullOrEmpty(title))
+            return null;
+
+        string className = GetWindowClassName(hWnd);
+        if (ShouldIgnoreWindow(className) && applyRules)
+            return null;
+
+        RECT rect;
+        if (!GetWindowRect(hWnd, out rect) && applyRules)
+            return null;
+
+        Rectangle windowBounds = new Rectangle(rect.Left, rect.Top, rect.Right - rect.Left, rect.Bottom - rect.Top);
+        Screen currentScreen = Screen.FromRectangle(windowBounds);
+        if (!currentScreen.Primary && applyRules)
+            return null;
+
+        return new WindowInformation()
+        {
+            Handle = hWnd,
+            Title = title,
+            ClassName = className,
+            Location = new Point() { X = rect.Left, Y = rect.Top },
+            Size = new Point() { X = rect.Right - rect.Left, Y = rect.Bottom - rect.Top },
+            Rect = windowBounds
+        };
+    }
+
     private static IEnumerable<string> getClassNameToIgnore()
     {
         yield return "Shell_TrayWnd";

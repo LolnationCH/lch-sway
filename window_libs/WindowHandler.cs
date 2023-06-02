@@ -8,6 +8,8 @@ public static class WindowHandler
 
     public static Dictionary<SnapZoneLayout, int> LayoutIndexes = new();
 
+    public static bool IgnoredHandle = false;
+
     private static WindowEvent windowEvent = new();
     #endregion
 
@@ -46,9 +48,25 @@ public static class WindowHandler
         AddingMaximizeBoxStyle(handle);
     }
 
+    public static void MaximaizeWindow(WindowInformation window)
+    {
+        var handle = window.Handle;
+        UnMaximizeWindow(handle);
+        RemoveMaximizeBoxStyle(handle);
+        ShowWindow(handle, WindowShowStyle.SW_MAXIMIZE);
+        AddingMaximizeBoxStyle(handle);
+    }
+
     public static void ResetSnapZoneIndex()
     {
         LayoutIndexes = new();
+    }
+
+    public static WindowInformation? GetCurrentWindowInformation()
+    {
+        // Get Foreground Window
+        var handle = GetForegroundWindow();
+        return WindowFetcher.GetWindowInformationByHandle(handle);
     }
     #endregion
 
@@ -102,19 +120,19 @@ public static class WindowHandler
         if (LayoutIndexes.ContainsKey(currentLayout))
             LayoutIndexes[currentLayout] = DecrementIndexCurrentLayout(LayoutIndexes[currentLayout]);
         else
-            LayoutIndexes.Add(currentLayout, currentLayout.Count - 1);
+            LayoutIndexes.Add(currentLayout, currentLayout.Zones.Count - 1);
 
         return GetCurrentSnapZone();
     }
 
     private static SnapZone GetCurrentSnapZone()
     {
-        return currentLayout[LayoutIndexes[currentLayout]];
+        return currentLayout.Zones[LayoutIndexes[currentLayout]];
     }
 
     private static int IncrementIndexCurrentLayout(int index)
     {
-        if (index == currentLayout.Count - 1)
+        if (index == currentLayout.Zones.Count - 1)
             return 0;
         else
             return index + 1;
@@ -123,13 +141,14 @@ public static class WindowHandler
     private static int DecrementIndexCurrentLayout(int index)
     {
         if (index == 0)
-            return currentLayout.Count - 1;
+            return currentLayout.Zones.Count - 1;
         else
             return index - 1;
     }
 
     private static bool IsWindowHandled(WindowInformation window)
     {
+        if (IgnoredHandle) return false;
         return windowsHandled.Any(x => x.Handle == window.Handle);
     }
     #endregion

@@ -9,9 +9,11 @@ public class SnapZone
     }
 }
 
-public class SnapZoneLayout : List<SnapZone>
+public class SnapZoneLayout
 {
-    public SnapZoneLayout() : base() { }
+    public required List<SnapZone> Zones { get; set; }
 
-    public SnapZoneLayout(IEnumerable<SnapZone> collection) : base(collection) { }
+    public required string Name { get; set; }
+
+    public SnapZoneLayout() { }
 }

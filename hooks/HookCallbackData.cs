@@ -31,9 +31,27 @@ public class HookCallbackData
         return false;
     }
 
+    public void ResetKeys()
+    {
+        foreach (var key in keysPressed.Keys.ToList())
+        {
+            keysPressed[key] = false;
+        }
+    }
+
     private bool IsKeysDown(List<Keys> key)
     {
         return key.Any(IsKeyDown);
+    }
+
+    public Action? GetAction()
+    {
+        foreach (var key in keysPressed.Keys)
+        {
+            if (keysPressed[key] && KeyActions.actions.ContainsKey(key))
+                return KeyActions.actions[key];
+        }
+        return null;
     }
 
     public int GetModifier()
