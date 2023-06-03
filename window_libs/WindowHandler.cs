@@ -3,7 +3,7 @@ using static PInvoke.User32;
 public static class WindowHandler
 {
     #region Members
-    public static List<WindowInformation> windowsHandled = new();
+    public static Dictionary<WindowInformation, SnapZone> windowsHandledInformation = new();
     public static SnapZoneLayout currentLayout = SnapLayoutsFactory.GetLayout();
 
     public static Dictionary<SnapZoneLayout, int> LayoutIndexes = new();
@@ -32,12 +32,13 @@ public static class WindowHandler
 
     public static void MoveWindowToCurrentZone(WindowInformation window, SnapZoneLayout layout)
     {
-        MoveWindowToZone(window, layout, GetCurrentSnapZone);
+        var snapZone = windowsHandledInformation.ContainsKey(window) ? windowsHandledInformation[window] : GetCurrentSnapZone();
+        MoveWindowToZone(window, snapZone);
     }
 
     public static void MoveWindowToZone(WindowInformation window, SnapZone snapZone)
     {
-        windowsHandled.Add(window);
+        windowsHandledInformation.Add(window, snapZone);
         TracesHandler.PrintObj("Moving", new() { { "title", window.Title }, { "zone", snapZone } });
         var handle = window.Handle;
 
@@ -64,7 +65,6 @@ public static class WindowHandler
 
     public static WindowInformation? GetCurrentWindowInformation()
     {
-        // Get Foreground Window
         var handle = GetForegroundWindow();
         return WindowFetcher.GetWindowInformationByHandle(handle);
     }
@@ -149,7 +149,7 @@ public static class WindowHandler
     private static bool IsWindowHandled(WindowInformation window)
     {
         if (IgnoredHandle) return false;
-        return windowsHandled.Any(x => x.Handle == window.Handle);
+        return windowsHandledInformation.Keys.Where(x => x.Handle == window.Handle).Any();
     }
     #endregion
 }
