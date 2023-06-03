@@ -22,6 +22,6 @@ public static class KeyActions
         { Keys.Right, MovementActions.RightMovement },
         { Keys.Up, MovementActions.UpMovement },
         { Keys.Down, MovementActions.DownMovement },
-
+        { Keys.V , () => Environment.Exit(0) }
     };
 }
