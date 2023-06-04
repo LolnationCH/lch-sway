@@ -31,11 +31,6 @@ public class WindowFetcher
     private delegate bool EnumWindowsProc(IntPtr hWnd, IntPtr lParam);
     #endregion
 
-    [DllImport("coredll.dll", SetLastError = true)]
-    private static extern int GetModuleFileName(IntPtr hModule, StringBuilder lpFilename, int nSize);
-    [DllImport("kernel32.dll")]
-    static extern int GetProcessId(IntPtr handle);
-
     public static List<WindowInformation> GetWindowsOnCurrentScreen()
     {
         List<WindowInformation> windows = new List<WindowInformation>();
