@@ -1,0 +1,39 @@
+using System.Runtime.InteropServices;
+using System.Text;
+
+public static class WindowModuleGetter
+{
+    [DllImport("user32.dll")]
+    static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
+
+    [DllImport("kernel32.dll")]
+    static extern IntPtr OpenProcess(UInt32 dwDesiredAccess, Int32 bInheritHandle, UInt32 dwProcessId);
+
+    [DllImport("psapi.dll")]
+    static extern uint GetModuleFileNameEx(IntPtr hProcess, IntPtr hModule, [Out] StringBuilder lpBaseName, [In][MarshalAs(UnmanagedType.U4)] int nSize);
+
+    [DllImport("kernel32.dll")]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    static extern bool CloseHandle(IntPtr hObject);
+
+    public static string? GetWindowModuleFileName(IntPtr hWnd)
+    {
+        try
+        {
+            uint processId = 0;
+            const int nChars = 1024;
+            StringBuilder filename = new StringBuilder(nChars);
+            GetWindowThreadProcessId(hWnd, out processId);
+            IntPtr hProcess = OpenProcess(1040, 0, processId);
+            GetModuleFileNameEx(hProcess, IntPtr.Zero, filename, nChars);
+            CloseHandle(hProcess);
+            return filename.ToString();
+        }
+        catch (Exception e)
+        {
+            TracesHandler.Print("GetWindowModuleFileName", e.Message);
+            return null;
+        }
+    }
+
+}

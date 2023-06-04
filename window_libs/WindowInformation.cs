@@ -24,6 +24,8 @@ public class WindowInformation
 
     public required Rectangle Rect { get; set; }
 
+    public required string? ModuleFileName { get; set; }
+
     public override string ToString()
     {
         return $"Title: {Title}, ClassName: {ClassName}, Location: {Location}, Size: {Size}";

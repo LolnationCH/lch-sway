@@ -7,7 +7,7 @@ public static class WindowLayoutSetter
 
     private static void SetProgramsWithLayout(List<WindowInformation> windowInformation, ProgramToLayout programToLayout)
     {
-        var windows = GetWindowsFitConfig(windowInformation, programToLayout);
+        var windows = ConfigurationUtils.GetWindowsFitConfig(windowInformation, programToLayout);
         if (windows.Count == 0)
             return;
 
@@ -18,21 +18,5 @@ public static class WindowLayoutSetter
     {
         var currentLayout = SnapLayoutsFactory.GetLayout(programToLayout.Layout);
         windows.ForEach(y => WindowHandler.MoveWindowToNextZone(y, currentLayout));
-    }
-
-    private static List<WindowInformation> GetWindowsFitConfig(List<WindowInformation> windowInformation, ProgramToLayout programToLayout)
-    {
-        var windows = new HashSet<WindowInformation>();
-        programToLayout.ProgramTitles.ForEach(titleThatApplyToLayout =>
-        {
-            windowInformation.Where(windowInfo => TitleContains(windowInfo, titleThatApplyToLayout))
-                             .ToList().ForEach(x => windows.Add(x));
-        });
-        return windows.ToList();
-    }
-
-    private static bool TitleContains(WindowInformation windowInformation, string title)
-    {
-        return windowInformation.Title.ToLower().Contains(title.ToLower());
     }
 }

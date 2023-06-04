@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -30,6 +31,11 @@ public class WindowFetcher
     private delegate bool EnumWindowsProc(IntPtr hWnd, IntPtr lParam);
     #endregion
 
+    [DllImport("coredll.dll", SetLastError = true)]
+    private static extern int GetModuleFileName(IntPtr hModule, StringBuilder lpFilename, int nSize);
+    [DllImport("kernel32.dll")]
+    static extern int GetProcessId(IntPtr handle);
+
     public static List<WindowInformation> GetWindowsOnCurrentScreen()
     {
         List<WindowInformation> windows = new List<WindowInformation>();
@@ -39,31 +45,10 @@ public class WindowFetcher
             if (!IsWindowVisible(hWnd))
                 return true;
 
-            string title = GetWindowTitle(hWnd);
-            if (string.IsNullOrEmpty(title))
-                return true;
-
-            string className = GetWindowClassName(hWnd);
-            if (ShouldIgnoreWindow(className))
-                return true;
-
-            RECT rect;
-            if (!GetWindowRect(hWnd, out rect))
-                return true;
-
-            Rectangle windowBounds = new Rectangle(rect.Left, rect.Top, rect.Right - rect.Left, rect.Bottom - rect.Top);
-            Screen currentScreen = Screen.FromRectangle(windowBounds);
-            if (!currentScreen.Primary)
-                return true;
-
-            windows.Add(new WindowInformation()
+            GetWindowInformationByHandle(hWnd).IfNotNull(window =>
             {
-                Handle = hWnd,
-                Title = title,
-                ClassName = className,
-                Location = new Point() { X = rect.Left, Y = rect.Top },
-                Size = new Point() { X = rect.Right - rect.Left, Y = rect.Bottom - rect.Top },
-                Rect = windowBounds
+                windows.Add(window!);
+                TracesHandler.Print("WindowFetcher", windows.Last().ToString());
             });
 
             return true;
@@ -86,9 +71,7 @@ public class WindowFetcher
             return null;
 
         Rectangle windowBounds = new Rectangle(rect.Left, rect.Top, rect.Right - rect.Left, rect.Bottom - rect.Top);
-        Screen currentScreen = Screen.FromRectangle(windowBounds);
-        if (!currentScreen.Primary && applyRules)
-            return null;
+        string? moduleFileName = WindowModuleGetter.GetWindowModuleFileName(hWnd);
 
         return new WindowInformation()
         {
@@ -97,7 +80,8 @@ public class WindowFetcher
             ClassName = className,
             Location = new Point() { X = rect.Left, Y = rect.Top },
             Size = new Point() { X = rect.Right - rect.Left, Y = rect.Bottom - rect.Top },
-            Rect = windowBounds
+            Rect = windowBounds,
+            ModuleFileName = moduleFileName
         };
     }
 

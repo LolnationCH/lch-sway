@@ -9,7 +9,7 @@ public static class KeyActions
             if (window == null)
                 return null;
 
-            var layout = ConfigurationUtils.GetProgramToLayout(window.Title);
+            var layout = ConfigurationUtils.GetLayoutOfProgram(window);
             if (layout == null)
                 return null;
 
