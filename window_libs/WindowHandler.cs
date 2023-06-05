@@ -20,6 +20,15 @@ public static class WindowHandler
         WindowLayoutSetter.SetProgramsToLayout(windows);
     }
 
+    public static void Refresh()
+    {
+        windowsHandledInformation = new();
+        currentLayout = SnapLayoutsFactory.GetLayout();
+        LayoutIndexes = new();
+        IgnoredHandle = false;
+        HandleWindows();
+    }
+
     public static void MoveWindowToNextZone(WindowInformation window, SnapZoneLayout layout)
     {
         MoveWindowToZone(window, layout, GetNextSnapZone);

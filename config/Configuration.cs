@@ -177,6 +177,11 @@ public class Configuration
             return new Configuration();
         }
     }
+
+    public static void Refresh()
+    {
+        _instance = Load();
+    }
     #endregion
 
     #region Singleton part

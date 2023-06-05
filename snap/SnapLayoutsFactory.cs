@@ -51,6 +51,11 @@ public static class SnapLayoutsFactory
         }
     };
 
+    public static void Refresh()
+    {
+        LayoutIndexes.Clear();
+    }
+
     public static Dictionary<string, SnapZoneLayout> LayoutIndexes = new();
     public static SnapZoneLayout GetLayout(string layout = "full")
     {
