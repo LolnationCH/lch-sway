@@ -32,6 +32,11 @@ public static class ConfigurationUtils
             windowInformation.Where(windowInfo => ModuleFileNameContains(moduleFileNameFilter, windowInfo))
                              .ToList().ForEach(x => windows.Add(x));
         });
+        programToLayout.TitlesToExclude.ForEach(titleFilter =>
+        {
+            windowInformation.Where(windowInfo => TitleContains(titleFilter, windowInfo))
+                             .ToList().ForEach(x => windows.Remove(x));
+        });
         return windows.ToList();
     }
 }
