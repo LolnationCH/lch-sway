@@ -23,6 +23,7 @@ public static class KeyActions
         { Keys.Up, MovementActions.UpMovement },
         { Keys.Down, MovementActions.DownMovement },
         { Keys.V , () => Environment.Exit(0) },
-        { Keys.R, RefreshAction.Refresh }
+        { Keys.R, ConfigAction.Refresh },
+        { Keys.C, ConfigAction.OpenConfig }
     };
 }
