@@ -17,13 +17,18 @@ public static class KeyActions
         }
     }
 
-    public static Dictionary<Keys, Action> actions = new(){
-        { Keys.Left, MovementActions.LeftMovement },
-        { Keys.Right, MovementActions.RightMovement },
-        { Keys.Up, MovementActions.UpMovement },
-        { Keys.Down, MovementActions.DownMovement },
-        { Keys.V , () => Environment.Exit(0) },
-        { Keys.R, ConfigAction.Refresh },
-        { Keys.C, ConfigAction.OpenConfig }
-    };
+    public static bool KeyHasAction(Keys key)
+    {
+        return Configuration.Instance.KeyBindings.TryGetValue(key, out string? actionName);
+    }
+
+    public static Action? GetAction(Keys key)
+    {
+        if (Configuration.Instance.KeyBindings.TryGetValue(key, out string? actionName))
+        {
+            ActionNames.actions.TryGetValue(actionName!, out Action? action);
+            return action;
+        }
+        return null;
+    }
 }

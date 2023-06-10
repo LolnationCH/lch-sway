@@ -7,6 +7,8 @@ public class Configuration
 
     public Dictionary<string, List<SnapZone>> customSnapLayouts { get; set; } = ConfigurationDefaultData.customSnapLayouts;
 
+    public Dictionary<Keys, string> KeyBindings { get; set; } = ConfigurationDefaultData.KeyBindings;
+
     #region generic setter
     public void prepend(string key, string value)
     {

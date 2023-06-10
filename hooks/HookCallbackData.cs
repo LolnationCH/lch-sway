@@ -48,8 +48,8 @@ public class HookCallbackData
     {
         foreach (var key in keysPressed.Keys)
         {
-            if (keysPressed[key] && KeyActions.actions.ContainsKey(key))
-                return KeyActions.actions[key];
+            if (keysPressed[key] && KeyActions.KeyHasAction(key))
+                return KeyActions.GetAction(key);
         }
         return null;
     }
